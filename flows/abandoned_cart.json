@@ -1,0 +1,19 @@
+{
+  "id": "abandoned_cart",
+  "name": "Abandoned Cart",
+  "description": "Two reminders after a cart is started. Exits the moment an order is placed. Carts under $20 do not enter. Loyal customers get no discount.",
+  "trigger": {"event": "added_to_cart", "filter": {"trigger_prop": {"key": "total", "op": ">=", "value": 20}}},
+  "reentry_hours": 72,
+  "exit_events": ["placed_order"],
+  "allow_dormant": false,
+  "start": "wait_1h",
+  "nodes": {
+    "wait_1h": {"type": "delay", "hours": 1, "next": "send_1"},
+    "send_1": {"type": "send", "template": "cart_reminder_1", "subject": "{{ customer.first_name | default: 'Hi' }}, you left something in your cart", "next": "wait_24h"},
+    "wait_24h": {"type": "delay", "hours": 24, "next": "split_loyalty"},
+    "split_loyalty": {"type": "branch", "condition": {"any": [{"segment": "champions"}, {"segment": "loyal"}]}, "yes": "send_2_reminder", "no": "send_2_incentive"},
+    "send_2_reminder": {"type": "send", "template": "cart_reminder_2", "subject": "Still thinking it over?", "next": "end"},
+    "send_2_incentive": {"type": "send", "template": "cart_reminder_2_incentive", "subject": "{{ offer.discount_pct }}% off what is in your cart", "vars": {"discount_code": "COMEBACK5", "discount_pct": 5}, "next": "end"},
+    "end": {"type": "exit"}
+  }
+}

@@ -1,0 +1,4 @@
+<p>Hi {{ customer.first_name | default: "there" }},</p>
+<p>Take {{ offer.discount_pct }}% off your {{ cart.total | money }} cart with code <strong>{{ offer.discount_code }}</strong>.</p>
+{% if cart.total > 100 %}<p>Orders over $100 ship free.</p>{% else %}<p>Free shipping starts at $100.</p>{% endif %}
+<p><a href="https://example.com/cart">Finish checking out</a></p>

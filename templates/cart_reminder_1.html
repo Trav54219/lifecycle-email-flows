@@ -1,0 +1,5 @@
+<p>Hi {{ customer.first_name | default: "there" }},</p>
+<p>Your cart is saved:</p>
+<ul>{% for item in cart.items %}<li>{{ item.qty }} x {{ item.name }} ({{ item.price | money }})</li>{% endfor %}</ul>
+<p>Total: <strong>{{ cart.total | money }}</strong></p>
+<p><a href="https://example.com/cart">Return to your cart</a></p>

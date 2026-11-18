@@ -1,0 +1,13 @@
+[project]
+name = "lifecycle-email-flows"
+version = "0.1.0"
+description = "A small lifecycle-marketing flow engine (welcome, abandoned cart, win-back, onboarding) with segments, templates and a simulator. Synthetic data only."
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

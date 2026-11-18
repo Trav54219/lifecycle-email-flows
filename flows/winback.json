@@ -1,0 +1,19 @@
+{
+  "id": "winback",
+  "name": "Win-back",
+  "description": "Enrolls on every order; any later order cancels the earlier enrollments, so only the customer's latest order reaches day 45 with no repurchase. Two touches, soft for strong segments, offer for the rest. Dormant customers are allowed in (that is the point).",
+  "trigger": {"event": "placed_order"},
+  "reentry_hours": 0,
+  "exit_events": ["placed_order"],
+  "allow_dormant": true,
+  "start": "wait_45d",
+  "nodes": {
+    "wait_45d": {"type": "delay", "hours": 1080, "next": "split_value"},
+    "split_value": {"type": "branch", "condition": {"any": [{"segment": "champions"}, {"segment": "loyal"}]}, "yes": "send_1_soft", "no": "send_1_offer"},
+    "send_1_soft": {"type": "send", "template": "winback_1_soft", "subject": "It has been a while, {{ customer.first_name | default: 'friend' }}", "next": "wait_14d"},
+    "send_1_offer": {"type": "send", "template": "winback_1_offer", "subject": "We saved {{ offer.discount_pct }}% for you", "vars": {"discount_code": "MISSYOU15", "discount_pct": 15}, "next": "wait_14d"},
+    "wait_14d": {"type": "delay", "hours": 336, "next": "send_2_final"},
+    "send_2_final": {"type": "send", "template": "winback_2_final", "subject": "Should we keep emailing you?", "next": "end"},
+    "end": {"type": "exit"}
+  }
+}

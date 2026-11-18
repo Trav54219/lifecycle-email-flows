@@ -1,0 +1,19 @@
+{
+  "id": "onboarding",
+  "name": "Post-purchase Onboarding",
+  "description": "For first-time buyers only. A tips email, then a second email chosen by whether they clicked anything since their first order.",
+  "trigger": {"event": "placed_order", "filter": {"count": {"event": "placed_order", "op": "==", "value": 1}}},
+  "reentry_hours": null,
+  "exit_events": [],
+  "allow_dormant": false,
+  "start": "wait_3d",
+  "nodes": {
+    "wait_3d": {"type": "delay", "hours": 72, "next": "send_1_tips"},
+    "send_1_tips": {"type": "send", "template": "onboarding_1_tips", "subject": "Getting the most from your first order", "next": "wait_4d"},
+    "wait_4d": {"type": "delay", "hours": 96, "next": "clicked"},
+    "clicked": {"type": "branch", "condition": {"did": {"event": "email_click", "since": "trigger"}}, "yes": "send_2_referral", "no": "send_2_help"},
+    "send_2_referral": {"type": "send", "template": "onboarding_2_referral", "subject": "Give a friend {{ offer.discount_pct }}% off", "vars": {"discount_pct": 10, "discount_code": "FRIEND10"}, "next": "end"},
+    "send_2_help": {"type": "send", "template": "onboarding_2_help", "subject": "Anything we can help with?", "next": "end"},
+    "end": {"type": "exit"}
+  }
+}

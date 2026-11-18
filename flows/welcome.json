@@ -1,0 +1,22 @@
+{
+  "id": "welcome",
+  "name": "Welcome Series",
+  "description": "Three-touch series for new subscribers. Branches on purchase and on engagement tier; stops pushing the incentive to buyers.",
+  "trigger": {"event": "signup"},
+  "reentry_hours": null,
+  "exit_events": [],
+  "allow_dormant": false,
+  "start": "send_1",
+  "nodes": {
+    "send_1": {"type": "send", "template": "welcome_1", "subject": "Welcome to {{ brand.name }}, {{ customer.first_name | default: 'there' }}", "next": "wait_2d"},
+    "wait_2d": {"type": "delay", "hours": 48, "next": "bought_1"},
+    "bought_1": {"type": "branch", "condition": {"did": {"event": "placed_order", "since": "trigger"}}, "yes": "end", "no": "split_engagement"},
+    "split_engagement": {"type": "branch", "condition": {"segment": "highly_engaged"}, "yes": "send_2_story", "no": "send_2_incentive"},
+    "send_2_story": {"type": "send", "template": "welcome_2_story", "subject": "How {{ brand.name }} picks what we sell", "next": "wait_3d"},
+    "send_2_incentive": {"type": "send", "template": "welcome_2_incentive", "subject": "{{ offer.discount_pct }}% off your first order", "vars": {"discount_code": "WELCOME10", "discount_pct": 10}, "next": "wait_3d"},
+    "wait_3d": {"type": "delay", "hours": 72, "next": "bought_2"},
+    "bought_2": {"type": "branch", "condition": {"did": {"event": "placed_order", "since": "trigger"}}, "yes": "end", "no": "send_3"},
+    "send_3": {"type": "send", "template": "welcome_3_last_call", "subject": "Your welcome code expires soon", "vars": {"discount_code": "WELCOME10", "discount_pct": 10}, "next": "end"},
+    "end": {"type": "exit"}
+  }
+}
